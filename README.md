@@ -1,0 +1,2 @@
+# Minitalk
+Minitalk project - Hive
