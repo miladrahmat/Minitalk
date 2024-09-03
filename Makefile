@@ -1,0 +1,53 @@
+CLIENT = client
+
+SERVER = server
+
+CC = cc
+
+CFLAGS = -Wall -Wextra -Werror
+
+SRC_DIR = ./sources/
+
+INC_DIR = ./includes/
+
+LIBFT = $(INC_DIR)Libft/libft.a
+
+CLIENT_SRCS = $(SRC_DIR)client.c
+
+SERVER_SRCS = $(SRC_DIR)server.c
+
+CLIENT_OBJS = $(CLIENT_SRCS:%.c=%.o)
+
+SERVER_OBJS = $(SERVER_SRCS:%.c=%.o)
+
+all: $(CLIENT) $(SERVER)
+
+%.o: %.c
+	@$(CC) $(CFLAGS) -o $@ -c $<
+
+$(CLIENT): $(CLIENT_OBJS) $(LIBFT)
+	@echo "\e[1;93m Preparing Client ⏳ \e[0m"
+	@$(CC) $(CFLAGS) $(CLIENT_OBJS) $(LIBFT) -o $(CLIENT)
+	@echo "\e[1;92m Client ready! 🗣 \e[0m"
+
+$(SERVER): $(SERVER_OBJS) $(LIBFT)
+	@echo "\e[1;93m Preparing Server ⏳ \e[0m"
+	@$(CC) $(CFLAGS) $(SERVER_OBJS) $(LIBFT) -o $(SERVER)
+	@echo "\e[1;92m Server ready! 💻 \e[0m"
+
+$(LIBFT):
+	@echo "\e[1;93m Compiling Libft ⏳ \e[0m"
+	@make -s -C $(INC_DIR)Libft
+	@echo "\e[1;92m Libft compiled! 📚 \e[0m"
+
+clean:
+	@make clean -s -C $(INC_DIR)Libft && rm -fr $(CLIENT_OBJS) \
+		&& rm -fr $(SERVER_OBJS) && echo "\e[1;96m Removing all object files 🧹 \e[0m"
+
+fclean: clean
+	@make fclean -s -C $(INC_DIR)Libft && rm -fr $(CLIENT) \
+		&& rm -fr $(SERVER) && echo "\e[1;96m Removing all executables 🧹 \e[0m"
+
+re: fclean all
+
+.PHONY: all, clean, fclean, re
