@@ -12,6 +12,8 @@ INC_DIR = ./includes/
 
 LIBFT = $(INC_DIR)Libft/libft.a
 
+HEADERS = -I $(INC_DIR)Libft -I $(INC_DIR)
+
 CLIENT_SRCS = $(SRC_DIR)client.c
 
 SERVER_SRCS = $(SRC_DIR)server.c
@@ -23,16 +25,16 @@ SERVER_OBJS = $(SERVER_SRCS:%.c=%.o)
 all: $(CLIENT) $(SERVER)
 
 %.o: %.c
-	@$(CC) $(CFLAGS) -o $@ -c $<
+	@$(CC) $(CFLAGS) $(HEADERS) -o $@ -c $<
 
 $(CLIENT): $(CLIENT_OBJS) $(LIBFT)
 	@echo "\e[1;93m Preparing Client ⏳ \e[0m"
-	@$(CC) $(CFLAGS) $(CLIENT_OBJS) $(LIBFT) -o $(CLIENT)
+	@$(CC) $(CFLAGS) $(CLIENT_OBJS) $(LIBFT) $(HEADERS) -o $(CLIENT)
 	@echo "\e[1;92m Client ready! 🗣 \e[0m"
 
 $(SERVER): $(SERVER_OBJS) $(LIBFT)
 	@echo "\e[1;93m Preparing Server ⏳ \e[0m"
-	@$(CC) $(CFLAGS) $(SERVER_OBJS) $(LIBFT) -o $(SERVER)
+	@$(CC) $(CFLAGS) $(SERVER_OBJS) $(LIBFT) $(HEADERS) -o $(SERVER)
 	@echo "\e[1;92m Server ready! 💻 \e[0m"
 
 $(LIBFT):

@@ -6,9 +6,10 @@
 /*   By: mrahmat- < mrahmat-@student.hive.fi >      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/02 13:05:38 by mrahmat-          #+#    #+#             */
-/*   Updated: 2024/09/02 13:16:36 by mrahmat-         ###   ########.fr       */
+/*   Updated: 2024/09/03 17:58:27 by mrahmat-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./Libft/libft.h"
+#include <libft.h>
+#include <vector.h>
 #include <signal.h>
