@@ -1,31 +1,35 @@
-CLIENT = client
+CLIENT := client
 
-SERVER = server
+SERVER := server
 
-CC = cc
+CC := cc
 
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS := -Wall -Wextra -Werror
 
-SRC_DIR = ./sources/
+WAIT_TIME ?= 500
 
-INC_DIR = ./includes/
+SRC_DIR := ./sources/
 
-LIBFT = $(INC_DIR)Libft/libft.a
+INC_DIR := ./includes/
 
-HEADERS = -I $(INC_DIR)Libft -I $(INC_DIR)
+LIBFT := $(INC_DIR)Libft/libft.a
 
-CLIENT_SRCS = $(SRC_DIR)client.c
+HEADERS := -I $(INC_DIR)Libft -I $(INC_DIR)
 
-SERVER_SRCS = $(SRC_DIR)server.c
+CLIENT_SRCS := $(SRC_DIR)client.c \
+				$(SRC_DIR)utils.c
 
-CLIENT_OBJS = $(CLIENT_SRCS:%.c=%.o)
+SERVER_SRCS := $(SRC_DIR)server.c \
+				$(SRC_DIR)utils.c
 
-SERVER_OBJS = $(SERVER_SRCS:%.c=%.o)
+CLIENT_OBJS := $(CLIENT_SRCS:%.c=%.o)
+
+SERVER_OBJS := $(SERVER_SRCS:%.c=%.o)
 
 all: $(CLIENT) $(SERVER)
 
 %.o: %.c
-	@$(CC) $(CFLAGS) $(HEADERS) -o $@ -c $<
+	@$(CC) $(CFLAGS) -D WAIT_TIME=$(WAIT_TIME) $(HEADERS) -o $@ -c $<
 
 $(CLIENT): $(CLIENT_OBJS) $(LIBFT)
 	@echo "\e[1;93m Preparing Client ⏳ \e[0m"
