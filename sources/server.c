@@ -6,38 +6,47 @@
 /*   By: mrahmat- <mrahmat-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/02 17:18:03 by mrahmat-          #+#    #+#             */
-/*   Updated: 2024/09/04 13:33:01 by mrahmat-         ###   ########.fr       */
+/*   Updated: 2024/09/04 19:26:13 by mrahmat-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
 static int	check_sender(siginfo_t *info, volatile bool *process, \
-	unsigned int *client_pid)
+	pid_t *client_pid)
 {
-	if (*process == true && *client_pid != (unsigned int)info->si_pid)
-		return (err_msg(*client_pid, \
-			"Received signals from multiple sources. Aborting.."));
+	if (*process == true && *client_pid != info->si_pid)
+	{
+		usleep(1000);
+		kill(info->si_pid, SIGUSR2);
+		return (-1);
+	}
 	if (*process == false)
 	{
-		*client_pid = (unsigned int)info->si_pid;
+		usleep(1000);
+		kill(info->si_pid, SIGUSR1);
+		*client_pid = info->si_pid;
 		*process = true;
+		return (-1);
 	}
 	return (1);
 }
 
-static int	push_to_vector(unsigned int client_pid, volatile bool *process, \
+static int	push_to_vector(pid_t client_pid, volatile bool *process, \
 	t_vec *msg, char c)
 {
 	if (msg->memory == NULL)
 		if (vec_new(msg, 1, sizeof(char)) < 0)
-			return (err_msg(client_pid, "Malloc error. Aborting.."));
+			return (err_msg(client_pid, 0, \
+				"\e[1;31m Malloc error. Aborting.. \e[0m"));
 	if (vec_push(msg, &c) < 0)
-		return (err_msg(client_pid, "Malloc error. Aborting.."));
+		return (err_msg(client_pid, 0, \
+			"\e[1;31m Malloc error. Aborting.. \e[0m"));
 	if (c == '\0')
 	{
 		if (ft_printf("%s\n", msg->memory) < 0)
-			return (err_msg(client_pid, "ft_printf failed. Aborting.."));
+			return (err_msg(client_pid, 0, \
+				"\e[1;31m ft_printf failed. Aborting.. \e[0m"));
 		vec_free(msg);
 		*process = false;
 		kill(client_pid, SIGUSR1);
@@ -45,7 +54,7 @@ static int	push_to_vector(unsigned int client_pid, volatile bool *process, \
 	return (1);
 }
 
-static int	process_msg(unsigned int client_pid, int signal, \
+static int	process_msg(pid_t client_pid, int signal, \
 	volatile bool *process, t_vec *msg)
 {
 	static char	current;
@@ -68,6 +77,8 @@ static int	process_msg(unsigned int client_pid, int signal, \
 		current = 0;
 		bits = 0;
 	}
+	usleep(200);
+	kill(client_pid, SIGUSR1);
 	return (1);
 }
 
@@ -75,15 +86,11 @@ static void	handle_signals(int signal, siginfo_t *info, void *content)
 {
 	static t_vec				msg;
 	static volatile bool		processing_msg = false;
-	static unsigned int			client_pid;
+	static pid_t				client_pid;
 
 	(void)content;
 	if (check_sender(info, &processing_msg, &client_pid) < 0)
-	{
-		if (msg.memory != NULL)
-			vec_free(&msg);
-		exit(1);
-	}
+		return ;
 	if (processing_msg == true)
 	{
 		if (process_msg(client_pid, signal, &processing_msg, &msg) < 0)
@@ -98,11 +105,11 @@ static void	handle_signals(int signal, siginfo_t *info, void *content)
 int	main(void)
 {
 	struct sigaction	new_signal;
-	unsigned int		pid;
+	pid_t				pid;
 
 	pid = getpid();
 	if (ft_printf("Server PID: %u\n", pid) < 0)
-		err_msg(0, "ft_printf failed. Aborting..");
+		err_msg(0, 0, "\e[1;31m ft_printf failed. Aborting.. \e[0m");
 	new_signal.sa_sigaction = &handle_signals;
 	new_signal.sa_flags = SA_SIGINFO;
 	sigemptyset(&new_signal.sa_mask);

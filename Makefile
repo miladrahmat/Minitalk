@@ -29,7 +29,7 @@ SERVER_OBJS := $(SERVER_SRCS:%.c=%.o)
 all: $(CLIENT) $(SERVER)
 
 %.o: %.c
-	@$(CC) $(CFLAGS) -D WAIT_TIME=$(WAIT_TIME) $(HEADERS) -o $@ -c $<
+	@$(CC) $(CFLAGS) -g -D WAIT_TIME=$(WAIT_TIME) $(HEADERS) -o $@ -c $<
 
 $(CLIENT): $(CLIENT_OBJS) $(LIBFT)
 	@echo "\e[1;93m Preparing Client ⏳ \e[0m"
