@@ -6,7 +6,7 @@
 /*   By: mrahmat- <mrahmat-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/02 16:39:04 by mrahmat-          #+#    #+#             */
-/*   Updated: 2024/09/04 19:35:00 by mrahmat-         ###   ########.fr       */
+/*   Updated: 2024/09/05 19:49:21 by mrahmat-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,11 @@ static pid_t	handle_errors(int ac, char **av)
 	}
 	while (g_server_available == false)
 	{
-		kill(pid, SIGUSR1);
+		if (kill(pid, SIGUSR1) < 0)
+		{
+			err_msg(0, 0, "\e[1;31m Signal sending failed \e[0m");
+			exit(1);
+		}
 		pause();
 	}
 	return (pid);
@@ -50,12 +54,24 @@ static void	send_message(int pid, unsigned char c)
 	while (bits >= 0)
 	{
 		if (c & (1 << bits))
-			kill(pid, SIGUSR1);
+		{
+			if (kill(pid, SIGUSR1) < 0)
+			{
+				err_msg(0, 0, "\e[1;31m Signal sending failed \e[0m");
+				exit(1);
+			}
+		}
 		else
-			kill(pid, SIGUSR2);
+		{
+			if (kill(pid, SIGUSR2) < 0)
+			{
+				err_msg(0, 0, "\e[1;31m Signal sending failed \e[0m");
+				exit(1);
+			}
+		}
 		bits--;
 		pause();
-		usleep(50);
+		usleep(100);
 	}
 }
 
@@ -67,7 +83,7 @@ static void	check_server_status(int signal, siginfo_t *info, void *content)
 	{
 		err_msg(0, 0, \
 			"\e[1;33m Server is occupied, waiting for confirmation \e[0m");
-		sleep(1);
+		sleep(10);
 	}
 	else
 		g_server_available = true;

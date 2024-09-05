@@ -6,7 +6,7 @@
 /*   By: mrahmat- <mrahmat-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/02 17:18:03 by mrahmat-          #+#    #+#             */
-/*   Updated: 2024/09/04 19:26:13 by mrahmat-         ###   ########.fr       */
+/*   Updated: 2024/09/05 20:04:51 by mrahmat-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,18 @@ static int	check_sender(siginfo_t *info, volatile bool *process, \
 {
 	if (*process == true && *client_pid != info->si_pid)
 	{
-		usleep(1000);
+		usleep(50);
 		kill(info->si_pid, SIGUSR2);
 		return (-1);
 	}
 	if (*process == false)
 	{
 		usleep(1000);
-		kill(info->si_pid, SIGUSR1);
+		if (kill(info->si_pid, SIGUSR1) < 0)
+		{
+			err_msg(0, 0, "\e[1;31m Signal sending failed \e[0m");
+			return (-1);
+		}
 		*client_pid = info->si_pid;
 		*process = true;
 		return (-1);
@@ -49,7 +53,11 @@ static int	push_to_vector(pid_t client_pid, volatile bool *process, \
 				"\e[1;31m ft_printf failed. Aborting.. \e[0m"));
 		vec_free(msg);
 		*process = false;
-		kill(client_pid, SIGUSR1);
+		if (kill(client_pid, SIGUSR1) < 0)
+		{
+			err_msg(0, 0, "\e[1;31m Signal sending failed \e[0m");
+			return (-1);
+		}
 	}
 	return (1);
 }
@@ -77,8 +85,12 @@ static int	process_msg(pid_t client_pid, int signal, \
 		current = 0;
 		bits = 0;
 	}
-	usleep(200);
-	kill(client_pid, SIGUSR1);
+	usleep(500);
+	if (kill(client_pid, SIGUSR1) < 0)
+	{
+		err_msg(0, 0, "\e[1;31m Signal sending failed \e[0m");
+		return (-1);
+	}
 	return (1);
 }
 
@@ -87,10 +99,18 @@ static void	handle_signals(int signal, siginfo_t *info, void *content)
 	static t_vec				msg;
 	static volatile bool		processing_msg = false;
 	static pid_t				client_pid;
+	int							check;
 
 	(void)content;
-	if (check_sender(info, &processing_msg, &client_pid) < 0)
+	check = check_sender(info, &processing_msg, &client_pid);
+	if (check == -1)
 		return ;
+	else if (check == -2)
+	{
+		if (msg.memory != NULL)
+			vec_free(&msg);
+		exit(1);
+	}
 	if (processing_msg == true)
 	{
 		if (process_msg(client_pid, signal, &processing_msg, &msg) < 0)

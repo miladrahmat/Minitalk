@@ -6,8 +6,6 @@ CC := cc
 
 CFLAGS := -Wall -Wextra -Werror
 
-WAIT_TIME ?= 500
-
 SRC_DIR := ./sources/
 
 INC_DIR := ./includes/
@@ -29,7 +27,7 @@ SERVER_OBJS := $(SERVER_SRCS:%.c=%.o)
 all: $(CLIENT) $(SERVER)
 
 %.o: %.c
-	@$(CC) $(CFLAGS) -g -D WAIT_TIME=$(WAIT_TIME) $(HEADERS) -o $@ -c $<
+	@$(CC) $(CFLAGS) $(HEADERS) -o $@ -c $<
 
 $(CLIENT): $(CLIENT_OBJS) $(LIBFT)
 	@echo "\e[1;93m Preparing Client ⏳ \e[0m"
