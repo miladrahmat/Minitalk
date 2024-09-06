@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrahmat- <mrahmat-@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: mrahmat- < mrahmat-@student.hive.fi >      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/02 17:18:03 by mrahmat-          #+#    #+#             */
-/*   Updated: 2024/09/05 21:07:25 by mrahmat-         ###   ########.fr       */
+/*   Updated: 2024/09/06 15:14:06 by mrahmat-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,16 @@ static int	check_sender(siginfo_t *info, volatile bool *process, \
 	{
 		usleep(50);
 		if (kill(info->si_pid, SIGUSR2) < 0)
-			return (err_msg(0, 0, "\e[1;31m Signal sending failed \e[0m", -1));
+			return (err_msg(info->si_pid, \
+				"\e[1;31m Signal sending failed \e[0m", -1));
 		return (-2);
 	}
 	if (*process == false)
 	{
 		usleep(1000);
 		if (kill(info->si_pid, SIGUSR1) < 0)
-			return (err_msg(0, 0, "\e[1;31m Signal sending failed \e[0m", -1));
+			return (err_msg(info->si_pid, \
+				"\e[1;31m Signal sending failed \e[0m", -1));
 		*client_pid = info->si_pid;
 		*process = true;
 		return (-2);
@@ -39,20 +41,21 @@ static int	push_to_vector(pid_t client_pid, volatile bool *process, \
 {
 	if (msg->memory == NULL)
 		if (vec_new(msg, 1, sizeof(char)) < 0)
-			return (err_msg(client_pid, 0, \
-				"\e[1;31m Malloc error. Aborting.. \e[0m", -1));
+			return (err_msg(client_pid, \
+				"\e[1;31m Malloc error \e[0m", -1));
 	if (vec_push(msg, &c) < 0)
-		return (err_msg(client_pid, 0, \
-			"\e[1;31m Malloc error. Aborting.. \e[0m", -1));
+		return (err_msg(client_pid, \
+			"\e[1;31m Malloc error \e[0m", -1));
 	if (c == '\0')
 	{
 		if (ft_printf("%s\n", msg->memory) < 0)
-			return (err_msg(client_pid, 0, \
-				"\e[1;31m ft_printf failed. Aborting.. \e[0m", -1));
+			return (err_msg(client_pid, \
+				"\e[1;31m ft_printf failed to output message \e[0m", -1));
 		vec_free(msg);
 		*process = false;
 		if (kill(client_pid, SIGUSR1) < 0)
-			return (err_msg(0, 0, "\e[1;31m Signal sending failed \e[0m", -1));
+			return (err_msg(client_pid, \
+				"\e[1;31m Signal sending failed \e[0m", -1));
 	}
 	return (1);
 }
@@ -82,7 +85,8 @@ static int	process_msg(pid_t client_pid, int signal, \
 	}
 	usleep(500);
 	if (kill(client_pid, SIGUSR1) < 0)
-		return (err_msg(0, 0, "\e[1;31m Signal sending failed \e[0m", -1));
+		return (err_msg(client_pid, \
+			"\e[1;31m Signal sending failed \e[0m", -1));
 	return (1);
 }
 
@@ -121,10 +125,8 @@ int	main(void)
 
 	pid = getpid();
 	if (ft_printf("Server PID: %u\n", pid) < 0)
-		return (err_msg(0, 0, "\e[1;31m ft_printf failed. Aborting.. \e[0m", 1));
-	new_signal.sa_sigaction = &handle_signals;
-	new_signal.sa_flags = SA_SIGINFO;
-	sigemptyset(&new_signal.sa_mask);
+		return (err_msg(0, "\e[1;31m ft_printf failed to output PID \e[0m", 1));
+	new_signal = define_sig_func(&handle_signals);
 	sigaction(SIGUSR1, &new_signal, NULL);
 	sigaction(SIGUSR2, &new_signal, NULL);
 	while (1)

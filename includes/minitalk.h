@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minitalk.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrahmat- <mrahmat-@student.hive.fi>        +#+  +:+       +#+        */
+/*   By: mrahmat- < mrahmat-@student.hive.fi >      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/02 13:05:38 by mrahmat-          #+#    #+#             */
-/*   Updated: 2024/09/05 20:54:46 by mrahmat-         ###   ########.fr       */
+/*   Updated: 2024/09/06 15:56:16 by mrahmat-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,12 @@
 # include "vector.h"
 # include <signal.h>
 
-int	err_msg(unsigned int client_pid, unsigned int client_pid1, char *err_msg, \
-	int err_flag);
+int					err_msg(unsigned int client_pid, \
+	char *err_msg, int err_flag);
+struct sigaction	define_sig_func(void *func);
+void				check_final_status(int signal, siginfo_t *info, \
+	void *content);
+void				server_status_msg(int signal, siginfo_t *info, \
+	void *content);
 
 #endif
