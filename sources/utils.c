@@ -6,7 +6,7 @@
 /*   By: mrahmat- < mrahmat-@student.hive.fi >      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 11:03:03 by mrahmat-          #+#    #+#             */
-/*   Updated: 2024/09/06 16:01:43 by mrahmat-         ###   ########.fr       */
+/*   Updated: 2024/09/07 14:28:04 by mrahmat-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,14 +23,13 @@ int	err_msg(unsigned int client_pid, char *err_msg, int err_flag)
 		exit(1);
 }
 
-struct sigaction	define_sig_func(void *func)
+void	define_sig_func(struct sigaction *new_signal, void *func)
 {
-	struct sigaction	new_signal;
-
-	new_signal.sa_sigaction = func;
-	new_signal.sa_flags = SA_SIGINFO;
-	sigemptyset(&new_signal.sa_mask);
-	return (new_signal);
+	new_signal->sa_sigaction = func;
+	new_signal->sa_flags = SA_SIGINFO;
+	sigemptyset(&new_signal->sa_mask);
+	sigaction(SIGUSR1, new_signal, NULL);
+	sigaction(SIGUSR2, new_signal, NULL);
 }
 
 void	check_final_status(int signal, siginfo_t *info, void *content)

@@ -6,7 +6,7 @@
 /*   By: mrahmat- < mrahmat-@student.hive.fi >      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/02 17:18:03 by mrahmat-          #+#    #+#             */
-/*   Updated: 2024/09/06 15:14:06 by mrahmat-         ###   ########.fr       */
+/*   Updated: 2024/09/07 14:30:50 by mrahmat-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,9 +126,7 @@ int	main(void)
 	pid = getpid();
 	if (ft_printf("Server PID: %u\n", pid) < 0)
 		return (err_msg(0, "\e[1;31m ft_printf failed to output PID \e[0m", 1));
-	new_signal = define_sig_func(&handle_signals);
-	sigaction(SIGUSR1, &new_signal, NULL);
-	sigaction(SIGUSR2, &new_signal, NULL);
+	define_sig_func(&new_signal, &handle_signals);
 	while (1)
 		pause();
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: mrahmat- < mrahmat-@student.hive.fi >      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/02 16:39:04 by mrahmat-          #+#    #+#             */
-/*   Updated: 2024/09/06 16:03:34 by mrahmat-         ###   ########.fr       */
+/*   Updated: 2024/09/07 14:40:36 by mrahmat-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,24 +84,18 @@ int	main(int ac, char **av)
 {
 	struct sigaction	new_signal;
 	pid_t				pid;
-	int					i;
+	size_t				i;
 
-	new_signal = define_sig_func(&check_server_status);
-	sigaction(SIGUSR1, &new_signal, NULL);
-	sigaction(SIGUSR2, &new_signal, NULL);
+	define_sig_func(&new_signal, &check_server_status);
 	pid = handle_errors(ac, av);
 	if (pid <= 0)
 		exit(1);
-	new_signal = define_sig_func(&server_status_msg);
-	sigaction(SIGUSR1, &new_signal, NULL);
-	sigaction(SIGUSR2, &new_signal, NULL);
+	define_sig_func(&new_signal, &server_status_msg);
 	i = 0;
 	while (av[2][i] != '\0')
 		send_message(pid, av[2][i++]);
 	send_message(pid, av[2][i]);
-	new_signal = define_sig_func(&check_final_status);
-	sigaction(SIGUSR1, &new_signal, NULL);
-	sigaction(SIGUSR2, &new_signal, NULL);
+	define_sig_func(&new_signal, &check_final_status);
 	pause();
 	exit(0);
 }
