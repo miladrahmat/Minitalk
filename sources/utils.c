@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrahmat- < mrahmat-@student.hive.fi >      +#+  +:+       +#+        */
+/*   By: mrahmat- <mrahmat-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/04 11:03:03 by mrahmat-          #+#    #+#             */
-/*   Updated: 2024/09/07 14:28:04 by mrahmat-         ###   ########.fr       */
+/*   Updated: 2024/09/12 18:07:29 by mrahmat-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,13 +42,5 @@ void	check_final_status(int signal, siginfo_t *info, void *content)
 		exit(0);
 	}
 	else
-		err_msg(0, "\e[1;31m Server error: Please restart server \e[0m", 1);
-}
-
-void	server_status_msg(int signal, siginfo_t *info, void *content)
-{
-	(void)info;
-	(void)content;
-	if (signal == SIGUSR2)
 		err_msg(0, "\e[1;31m Server error: Please restart server \e[0m", 1);
 }

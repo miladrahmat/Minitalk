@@ -6,7 +6,7 @@
 /*   By: mrahmat- <mrahmat-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/02 16:39:04 by mrahmat-          #+#    #+#             */
-/*   Updated: 2024/09/12 12:29:30 by mrahmat-         ###   ########.fr       */
+/*   Updated: 2024/09/12 19:29:19 by mrahmat-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ static pid_t	handle_errors(int ac, char **av)
 	{
 		if (kill(pid, SIGUSR1) < 0)
 			return (err_msg(0, "\e[1;31m Signal sending failed \e[0m", 1));
-		pause();
+		sleep(10);
 	}
 	return (pid);
 }
@@ -47,19 +47,23 @@ static void	send_message(int pid, unsigned char c)
 	bits = 7;
 	while (bits >= 0)
 	{
-		if (c & (1 << bits))
+		g_server_available = false;
+		while (g_server_available == false)
 		{
-			if (kill(pid, SIGUSR1) < 0)
-				err_msg(0, "\e[1;31m Signal sending failed \e[0m", 1);
-		}
-		else
-		{
-			if (kill(pid, SIGUSR2) < 0)
-				err_msg(0, "\e[1;31m Signal sending failed \e[0m", 1);
+			if (c & (1 << bits))
+			{
+				if (kill(pid, SIGUSR1) < 0)
+					err_msg(0, "\e[1;31m Signal sending failed \e[0m", 1);
+			}
+			else
+			{
+				if (kill(pid, SIGUSR2) < 0)
+					err_msg(0, "\e[1;31m Signal sending failed \e[0m", 1);
+			}
+			sleep(1);
 		}
 		bits--;
-		pause();
-		usleep(200);
+		usleep(1);
 	}
 }
 
@@ -80,6 +84,16 @@ static void	check_server_status(int signal, siginfo_t *info, void *content)
 	}
 }
 
+void	server_status_msg(int signal, siginfo_t *info, void *content)
+{
+	(void)info;
+	(void)content;
+	if (signal == SIGUSR2)
+		err_msg(0, "\e[1;31m Server error: Please restart server \e[0m", 1);
+	else
+		g_server_available = true;
+}
+
 int	main(int ac, char **av)
 {
 	struct sigaction	new_signal;
@@ -96,6 +110,7 @@ int	main(int ac, char **av)
 		send_message(pid, av[2][i++]);
 	send_message(pid, av[2][i]);
 	define_sig_func(&new_signal, &check_final_status);
-	pause();
+	while (1)
+		sleep(1);
 	exit(0);
 }
