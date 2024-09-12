@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrahmat- < mrahmat-@student.hive.fi >      +#+  +:+       +#+        */
+/*   By: mrahmat- <mrahmat-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/02 16:39:04 by mrahmat-          #+#    #+#             */
-/*   Updated: 2024/09/07 14:40:36 by mrahmat-         ###   ########.fr       */
+/*   Updated: 2024/09/12 12:29:30 by mrahmat-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ static void	send_message(int pid, unsigned char c)
 		}
 		bits--;
 		pause();
-		usleep(100);
+		usleep(200);
 	}
 }
 

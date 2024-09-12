@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mrahmat- < mrahmat-@student.hive.fi >      +#+  +:+       +#+        */
+/*   By: mrahmat- <mrahmat-@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/02 17:18:03 by mrahmat-          #+#    #+#             */
-/*   Updated: 2024/09/07 14:30:50 by mrahmat-         ###   ########.fr       */
+/*   Updated: 2024/09/12 12:31:29 by mrahmat-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ static int	push_to_vector(pid_t client_pid, volatile bool *process, \
 		if (kill(client_pid, SIGUSR1) < 0)
 			return (err_msg(client_pid, \
 				"\e[1;31m Signal sending failed \e[0m", -1));
+		usleep(200);
 	}
 	return (1);
 }
