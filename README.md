@@ -10,6 +10,7 @@
 - [Introduction](#introduction)
 - [Examples](#examples)
 - [Bonus](#bonus)
+- [Installation](#installation)
 
 ## Introduction
 
@@ -26,7 +27,7 @@ When the `server` program is run, it outputs its PID:
 ./server
 Server PID: 131743
 ```
-The servers PID is the first argument to `client`, the third argument is the message:
+The servers PID is the first argument to `client`, the second argument is the message:
 ```
 ./client 131743 "Hello World"
 ```
@@ -66,4 +67,3 @@ git clone https://github.com/miladrahmat/Minitalk.git
 cd Minitalk
 make
 ```
-The examples provided [here](#examples) can be used as a reference on how to use the program.
